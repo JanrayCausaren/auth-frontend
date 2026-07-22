@@ -1,122 +1,148 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import * as React from "react"
+import { Controller, useForm } from "react-hook-form"
+import * as z from "zod"
+
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
+import { Input } from "@/components/ui/input"
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "./components/ui/field"
+import { InputGroup, InputGroupTextarea, InputGroupAddon, InputGroupText } from "./components/ui/input-group"
+import { Toaster } from "./components/ui/sonner"
+import { toast } from "sonner"
+import { zodResolver } from '@hookform/resolvers/zod'
+
+
+const formSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Bug title must be at least 5 characters.")
+    .max(32, "Bug title must be at most 32 characters."),
+  description: z
+    .string()
+    .min(20, "Description must be at least 20 characters.")
+    .max(100, "Description must be at most 100 characters."),
+})
+
+export function App() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+    },
+  })
+
+  function onSubmit(data: z.infer<typeof formSchema>) {
+    toast("You submitted the following values:", {
+      description: (
+        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
+          <code>{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+      position: "bottom-right",
+      classNames: {
+        content: "flex flex-col gap-2",
+      },
+      style: {
+        "--border-radius": "calc(var(--radius)  + 4px)",
+      } as React.CSSProperties,
+    })
+  }
 
   return (
-    <>
-      <section id="center " className='bg-amber-600'>
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get startedgdfgdfg</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <div>
+      <Card className="w-full sm:max-w-md">
+        <CardHeader>
+          <CardTitle>Bug Report</CardTitle>
+          <CardDescription>
+            Help us improve by reporting bugs you encounter.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+            <FieldGroup>
+              <Controller
+                name="title"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="form-rhf-demo-title">
+                      Bug Title
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="form-rhf-demo-title"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Login button not working on mobile"
+                      autoComplete="off"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="description"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="form-rhf-demo-description">
+                      Description
+                    </FieldLabel>
+                    <InputGroup>
+                      <InputGroupTextarea
+                        {...field}
+                        id="form-rhf-demo-description"
+                        placeholder="I'm having an issue with the login button on mobile."
+                        rows={6}
+                        className="min-h-24 resize-none"
+                        aria-invalid={fieldState.invalid}
+                      />
+                      <InputGroupAddon align="block-end">
+                        <InputGroupText className="tabular-nums">
+                          {field.value.length}/100 characters
+                        </InputGroupText>
+                      </InputGroupAddon>
+                    </InputGroup>
+                    <FieldDescription>
+                      Include steps to reproduce, expected behavior, and what
+                      actually happened.
+                    </FieldDescription>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+          </form>
+        </CardContent>
+        <CardFooter>
+          <Field orientation="horizontal">
+            <Button type="button" variant="outline" onClick={() => form.reset()}>
+              Reset
+            </Button>
+            <Button type="submit" form="form-rhf-demo">
+              Submit
+            </Button>
+          </Field>
+        </CardFooter>
+      </Card>
+      <Toaster></Toaster>
+    </div>
   )
 }
 
-export default App
+
+export default App;
+
