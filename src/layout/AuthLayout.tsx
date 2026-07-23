@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/ui/sonner'
 import React from 'react'
 import { Outlet } from 'react-router'
 
@@ -7,6 +8,7 @@ const AuthLayout = () => {
   return (
     <main>this is auth layout
       <Outlet></Outlet>
+      <Toaster></Toaster>
     </main>
   )
 }

@@ -8,7 +8,7 @@ const LandingLayout = () => {
     <main>
         <Outlet></Outlet>
     </main>
-  )
+  ) 
 }
 
 export default LandingLayout
