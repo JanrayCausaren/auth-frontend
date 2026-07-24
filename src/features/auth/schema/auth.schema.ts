@@ -6,6 +6,15 @@ export const formSchema = z.object({
 });
 
 
+export const registerInputSchema = z.object({
+  username: z.string().max(30).min(10),
+  email: z.email(),
+  password: z.string().min(10),
+});
+
+
+export type IRegister = z.infer<typeof registerInputSchema>
+
 
 
 
