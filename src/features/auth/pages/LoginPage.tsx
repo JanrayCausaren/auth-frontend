@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 import { useLogin } from "../hooks/auth.query";
 
 const LoginPage = () => {
-  const { isSuccess, isError, error, ...loginMutation } = useLogin();
+  const { isSuccess, isPending, isError, error, ...loginMutation } = useLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,7 +45,7 @@ const LoginPage = () => {
         onError: (error) => {
           console.log(error.code);
           console.log(error.message);
-          
+
           toast(`${error.message} sfsdf`, {
             description: (
               <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
@@ -60,9 +60,6 @@ const LoginPage = () => {
 
   return (
     <section>
-      {loginMutation.isPending && <p>{"this is running"}</p>}
-      {isSuccess && <p>{"dsfdskfj"}</p>}
-      {isError && <p>{error.message}</p>}
       <div>
         <section className="h-dvh">
           <div className="flex h-full justify-center items-center">
@@ -123,12 +120,17 @@ const LoginPage = () => {
                 <Field orientation="horizontal">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant={"outline"}
                     onClick={() => form.reset()}
                   >
                     Reset
                   </Button>
-                  <Button type="submit" form="form-rhf-demo">
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    variant={isPending ? "ghost" : "default"}
+                    form="form-rhf-demo"
+                  >
                     Submit
                   </Button>
                 </Field>
