@@ -36,47 +36,33 @@ const LoginPage = () => {
   });
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-   const login =  await loginMutation.mutateAsync({
-      username: data.username,
-      password: data.password,
-    });
-    
-    if (isError) {
-      console.log(error.name);
-      console.log(error.message);
-      
-      toast(`${error.message} sfsdf`, {
-        description: (
-          <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-            <code>{JSON.stringify(data, null, 2)}</code>
-          </pre>
-        ),
-      });
-    }
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2",
+    loginMutation.mutate(
+      {
+        username: data.username,
+        password: data.password,
       },
-      style: {
-        "--border-radius": "calc(var(--radius)  + 4px)",
-      } as React.CSSProperties,
-    });
+      {
+        onError: (error) => {
+          console.log(error.code);
+          console.log(error.message);
+          
+          toast(`${error.message} sfsdf`, {
+            description: (
+              <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground">
+                <code>{JSON.stringify(data, null, 2)}</code>
+              </pre>
+            ),
+          });
+        },
+      },
+    );
   }
-  if (isError) {
-    toast(`${error.message} sfsdf`, {
-      description: (
-        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-code p-4 text-code-foreground"></pre>
-      ),
-    });
-  }
+
   return (
     <section>
+      {loginMutation.isPending && <p>{"this is running"}</p>}
+      {isSuccess && <p>{"dsfdskfj"}</p>}
+      {isError && <p>{error.message}</p>}
       <div>
         <section className="h-dvh">
           <div className="flex h-full justify-center items-center">
